@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>cmake编译总结 | Hexo</title><meta name="author" content="Tom Huang"><meta name="copyright" content="Tom Huang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="使用cmake交叉编译的一些总结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cmake编译总结">
+<meta property="og:url" content="http://example.com/2023/01/08/cmake%E7%BC%96%E8%AF%91%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="使用cmake交叉编译的一些总结">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-01-08T09:21:54.000Z">
+<meta property="article:modified_time" content="2023-01-08T09:30:47.068Z">
+<meta property="article:author" content="Tom Huang">
+<meta property="article:tag" content="cmake">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2023/01/08/cmake%E7%BC%96%E8%AF%91%E6%80%BB%E7%BB%93/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'cmake编译总结',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-01-08 17:30:47'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li><li><a class="site-page child" href="/photo/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友联</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Hexo</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li><li><a class="site-page child" href="/photo/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友联</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">cmake编译总结</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-01-08T09:21:54.000Z" title="发表于 2023-01-08 17:21:54">2023-01-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-01-08T09:30:47.068Z" title="更新于 2023-01-08 17:30:47">2023-01-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="cmake编译总结"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="cmake编译总结"><a href="#cmake编译总结" class="headerlink" title="cmake编译总结"></a>cmake编译总结</h1><p>项目目录结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">--project/</span><br><span class="line">    --build/</span><br><span class="line">        build.sh</span><br><span class="line">    --src/</span><br><span class="line">        main.cpp</span><br><span class="line">    --test/</span><br><span class="line">        main.cpp</span><br><span class="line">    CMakeLists.txt</span><br></pre></td></tr></table></figure>
+<p>首先进入build目录，然后使用cmake编译的指令一般为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#/opt/cmake-3.21.1/bin/cmake -DBUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../platforms/linux/rv1126-toolchain-mky.cmake ..</span></span><br><span class="line">/opt/cmake-3.21.1/bin/cmake \                    </span><br><span class="line">-DBUILD_TESTS=OFF \</span><br><span class="line">-DCMAKE_BUILD_TYPE=Release \</span><br><span class="line">-DAUTHOR=hcz \</span><br><span class="line">-DBOOK_TIME=$(<span class="built_in">date</span> <span class="string">&quot;+%Y-%m-%d %H:%M:%S&quot;</span>) \</span><br><span class="line">-DEMAIL=2292805202@qq.com \</span><br><span class="line">-DPROJECT_VERSION=2.0.2d \</span><br><span class="line">-DCMAKE_TOOLCHAIN_FILE=../platforms/linux/rk3588-toolchain.cmake \</span><br><span class="line">-DCMAKE_INSTALL_PREFIX=../bin \</span><br><span class="line">..  </span><br><span class="line"></span><br><span class="line">cmake --build build/ -j --target install    <span class="comment">#或者是make -j install</span></span><br></pre></td></tr></table></figure>
+<p>指定版本的cmake，后面-D接的是一些编译参数，最后的.. 是CMakeLists.txt 所在路径，一般是build目录的上一层，所以是..<br>第一次cmake过后，生成了MakeList.txt文件，最后执行cmake –build build&#x2F; -j –target install或者make -j install 生成并安装可执行文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">-DBUILD_TESTS                       <span class="comment">#指定是否开启tese目录的测试程序的编译，删除或者在CMakeList.txt指定都行</span></span><br><span class="line">-DCMAKE_BUILD_TYPE                  <span class="comment">#可选值包括：</span></span><br><span class="line">                                        1、Debug：用于在没有优化的情况下，使用带有调试符号构建库或可执行文件</span><br><span class="line">                                        2、Release：用于构建的优化的库或可执行文件，不包含调试符号</span><br><span class="line">                                        3、RelWithDebInfo：由于构建较少的优化库或可执行文件，包含调试符号</span><br><span class="line">                                        4、MinSizeRel：用于不增加目标代码大小的优化方式，来构建或可执行文件</span><br><span class="line">                                        使用方法</span><br><span class="line">                                        <span class="built_in">set</span>(CMAKE_BUILD_TYPE <span class="string">&quot;Debug&quot;</span>)     <span class="comment"># CMakeLists.txt中指定</span></span><br><span class="line">                                        或者</span><br><span class="line">                                        cmake .. -D CMAKE_BUILD_TYPE=<span class="string">&quot;Debug&quot;</span>   <span class="comment"># 生成时命令行指定</span></span><br><span class="line">                                        常用配置</span><br><span class="line">                                        <span class="built_in">set</span>(CMAKE_CXX_FLAGS_DEBUG <span class="string">&quot;<span class="variable">$ENV</span>&#123;CXXFLAGS&#125; -O0 -Wall -g2 -ggdb&quot;</span>)       <span class="comment"># 启用GDB</span></span><br><span class="line">                                        <span class="built_in">set</span>(CMAKE_CXX_FLAGS_RELEASE <span class="string">&quot;<span class="variable">$ENV</span>&#123;CXXFLAGS&#125; -O3 -Wall&quot;</span>)               <span class="comment"># 启用优化（1～3）</span></span><br><span class="line"></span><br><span class="line">-DAUTHOR                            <span class="comment">#作者    </span></span><br><span class="line">-DBOOK_TIME                         <span class="comment">#设置时间</span></span><br><span class="line">-DEMAIL                             <span class="comment">#邮件</span></span><br><span class="line">-DPROJECT_VERSION                   <span class="comment">#程序版本</span></span><br><span class="line">-DCMAKE_TOOLCHAIN_FILE              <span class="comment">#指定交叉编译的文件，这个文件里面指定了CMAKE_SYSROOT、PKG_CONFIG_PATH、PKG_CONFIG_EXECUTABLE、CMAKE_C_COMPILER和CMAKE_CXX_COMPILER等</span></span><br><span class="line">-DCMAKE_INSTALL_PREFIX              <span class="comment">#指定安装的目录，也可以在CMakeList.txt里面设置 CMAKE_INSTALL_PREFIX 变量</span></span><br><span class="line">                                        SET(CMAKE_INSTALL_PREFIX &lt;install_path&gt;)  </span><br><span class="line">                                        设置完 install 的安装目录之后，执行 install 时可以通过 DESTINATION 直接指定安装目录之下的目录          </span><br><span class="line">                                        例子：</span><br><span class="line">                                            SET(CMAKE_INSTALL_PREFIX /usr/local)</span><br><span class="line">                                            INSTALL(TARGETS <span class="built_in">test</span> DESTINATION bin) <span class="comment">#将 test 安装到 /usr/local/bin 目录下</span></span><br></pre></td></tr></table></figure>
+
+<p>这种-D设置的编译参数，可以简单理解为设置了一个宏定义或者是一个变量，可以在CMakeList.txt文件里直接使用，也可以在CMakeList.txt文件用set()设置。<br>其中最重要的应该是-DCMAKE_TOOLCHAIN_FILE，指定交叉编译的文件，这些文件一般长这样：<br><img src="/2023/01/08/cmake%E7%BC%96%E8%AF%91%E6%80%BB%E7%BB%93/Image-16731699719334.png"><br>每个文件对应一种版本的交叉编译，里面设置不同的交叉编译器和环境变量<br>如rv1126版本的交叉编译：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">MESSAGE(STATUS <span class="string">&quot;Configure Cross Compiler&quot;</span>)</span><br><span class="line">SET(CMAKE_SYSTEM_NAME Linux)</span><br><span class="line">SET(CMAKE_SYSTEM_PROCESSOR arm)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SET(SYSROOT_PATH  /opt/rv1126_sdk/host/arm-buildroot-linux-gnueabihf/sysroot)</span><br><span class="line">SET(CMAKE_SYSROOT <span class="string">&quot;$&#123;SYSROOT_PATH&#125;&quot;</span>)</span><br><span class="line">MESSAGE(STATUS  <span class="string">&quot;Using sysroot path as $&#123;SYSROOT_PATH&#125;&quot;</span>)</span><br><span class="line"></span><br><span class="line">SET(ENV&#123;PKG_CONFIG_PATH&#125; $&#123;SYSROOT_PATH&#125;/usr/lib/pkgconfig:$ENV&#123;PKG_CONFIG_PATH&#125;)</span><br><span class="line">SET(PKG_CONFIG_EXECUTABLE <span class="string">&quot;/opt/rv1126_sdk/host/bin/pkg-config&quot;</span>)</span><br><span class="line"></span><br><span class="line">SET(CMAKE_C_COMPILER        /opt/rv1126_sdk/cross-compiler/gcc-arm<span class="number">-8.3</span><span class="number">-2019.03</span>-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc)</span><br><span class="line">SET(CMAKE_CXX_COMPILER      /opt/rv1126_sdk/cross-compiler/gcc-arm<span class="number">-8.3</span><span class="number">-2019.03</span>-x86_64-arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++)</span><br><span class="line"></span><br><span class="line"><span class="meta"># set searching rules for cross-compiler</span></span><br><span class="line"><span class="built_in">set</span>(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)</span><br><span class="line"><span class="built_in">set</span>(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)</span><br><span class="line"><span class="built_in">set</span>(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)</span><br><span class="line"><span class="built_in">set</span>(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)</span><br><span class="line"></span><br><span class="line">SET(YOUR_TARGET_OS linux)</span><br><span class="line">SET(YOUR_TARGET_ARCH armv7-a)</span><br><span class="line"></span><br><span class="line">SET(CMAKE_SKIP_BUILD_RPATH TRUE)</span><br><span class="line">SET(CMAKE_SKIP_RPATH TRUE)</span><br><span class="line"></span><br><span class="line"><span class="meta"># set g++ param</span></span><br><span class="line"># -fopenmp link libgomp</span><br><span class="line"><span class="title function_">SET</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;-std=c++11 -march=armv7-a -mfloat-abi=hard -mfpu=neon-vfpv4 \</span></span></span><br><span class="line"><span class="string"><span class="params">    -ffunction-sections \</span></span></span><br><span class="line"><span class="string"><span class="params">    -fdata-sections -O2 -fstack-protector-strong -lm -ldl -lstdc++\</span></span></span><br><span class="line"><span class="string"><span class="params">    $&#123;CMAKE_CXX_FLAGS&#125;&quot;</span>)</span></span><br></pre></td></tr></table></figure>
+<p>重点是<font color=#FF3030><strong>CMAKE_SYSROOT</strong>、<strong>PKG_CONFIG_PATH</strong>、<strong>PKG_CONFIG_EXECUTABLE</strong>、<strong>CMAKE_C_COMPILER</strong> 、<strong>CMAKE_CXX_COMPILER</strong></font>这几个变量的设置Pink</p>
+<p><font color=#FF3030><strong>CMAKE_SYSROOT</strong></font>： 这个选项是用来设置目标平台根目录，会对编译和链接过程中，查找头文件和链接库造成影响。<br>&amp;emsp;&amp;emsp;例如：原本默认会从&#x2F;usr&#x2F;include目录中搜索头文件、从&#x2F;usr&#x2F;lib中搜索依赖库，当设置了–sysroot&#x3D;dir（gcc是–sysroot，camek是CMAKE_SYSROOT) 后则会从dir&#x2F;usr&#x2F;include搜索头文件、从dir&#x2F;usr&#x2F;lib中搜索依赖库。</p>
+<p><font color=#FF3030><strong>PKG_CONFIG_PATH</strong></font> ：指定依赖配置文件的绝对路径，就是存放.pc配置文件的地方</p>
+<p><font color=#FF3030><strong>PKG_CONFIG_EXECUTABLE</strong></font>：指定pkg-config配置程序，作用是找到.pc文件，解析其内容，然后对底层构建工具（C&#x2F;C++编译器、链接器）或高层构建工具（cmake）提供具体配置项目。通常是在POSIX系统（Linux，MacOS等）使用pkg-config，解决第三方依赖项配置问题。</p>
+<p><font color=#FF3030><strong>CMAKE_C_COMPILER</strong></font> ：指定交叉编译的gcc编译器<br><font color=#FF3030><strong>CMAKE_CXX_COMPILER</strong></font> ：指定交叉编译的g++编译器</p>
+<p>还可以设置目标系统<font color=#FF3030><strong>YOUR_TARGET_OS</strong></font>和目标版本<font color=#FF3030><strong>YOUR_TARGET_ARCH</strong></font>，用来在CMakeList.txt找到对应的第三方软件库</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Tom Huang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/01/08/cmake%E7%BC%96%E8%AF%91%E6%80%BB%E7%BB%93/">http://example.com/2023/01/08/cmake%E7%BC%96%E8%AF%91%E6%80%BB%E7%BB%93/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Hexo</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cmake/">cmake</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/12/21/README/" title="README"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">README</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Tom Huang</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/zhouxiaolangxiansen" target="_blank" title="Github"><i class="fab fa-github"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#cmake%E7%BC%96%E8%AF%91%E6%80%BB%E7%BB%93"><span class="toc-number">1.</span> <span class="toc-text">cmake编译总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/01/08/cmake%E7%BC%96%E8%AF%91%E6%80%BB%E7%BB%93/" title="cmake编译总结">cmake编译总结</a><time datetime="2023-01-08T09:21:54.000Z" title="发表于 2023-01-08 17:21:54">2023-01-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/12/21/README/" title="README">README</a><time datetime="2022-12-21T06:48:00.000Z" title="发表于 2022-12-21 14:48:00">2022-12-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2022/12/21/hello-world/" title="Hello World">Hello World</a><time datetime="2022-12-21T03:24:51.687Z" title="发表于 2022-12-21 11:24:51">2022-12-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Tom Huang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
